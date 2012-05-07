@@ -19,6 +19,7 @@
 #   along with the CRM114 Library.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
 #C flags below are for GCC 4.3.2.
 
 
@@ -47,6 +48,13 @@ CFLAGS += -Iinclude -fpic
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Wpointer-arith -Wstrict-prototypes
 #well, pretty carefully
 CFLAGS += -Wno-sign-compare -Wno-overlength-strings
+
+# operating system specifics
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),FreeBSD)
+	CFLAGS += -DNO_LOGL
+	CFLAGS += -I/usr/local/include -L/usr/local/lib
+endif
 
 #These are optional.
 
@@ -109,6 +117,12 @@ LIB_NAME = $(SO_NAME).$(SO_VERSION)
 LIB = lib/$(SO_NAME)
 LIBLD_PATH = $(abspath lib)
 
+# libs required for executables
+ifeq ($(UNAME),FreeBSD)
+	LIBS = -lcrm114 -ltre -lm
+endif
+LIBS ?= -lcrm114 -ldl -ltre -lm
+
 all: $(LIB) tests/test tests/simple_demo
 
 $(LIBOBJS): $(LIBHDRS) Makefile
@@ -121,10 +135,26 @@ lib/%.o: lib/%.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 tests/test: tests/test.c tests/texts.h $(LIBHDRS)
-	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) -Wl,-rpath,$(LIBLD_PATH) $< -L $(LIBLD_PATH) -lcrm114 -ldl -ltre -lm
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) -Wl,-rpath,$(LIBLD_PATH) $< -L $(LIBLD_PATH) $(LIBS)
 
 tests/simple_demo: tests/simple_demo.c tests/texts.h
-	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) -Wl,-rpath,$(LIBLD_PATH) $< -L $(LIBLD_PATH) -lcrm114 -ldl -ltre -lm
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) -Wl,-rpath,$(LIBLD_PATH) $< -L $(LIBLD_PATH) $(LIBS)
+# install library
+# follows the common symlink convention for multiple lib versions
+INSTALLDIR ?= /usr/lib
+ifeq ($(UNAME),FreeBSD)
+	INSTALLDIR = /usr/local/lib
+endif
+$(INSTALLDIR)/$(SO_NAME): $(INSTALLDIR)/$(LIB_NAME)
+	ln -sf $(LIB_NAME) $(INSTALLDIR)/$(SO_NAME)
+	
+$(INSTALLDIR)/$(LIB_NAME): $(LIB)
+	install -vbS $(LIB) $(INSTALLDIR)/$(LIB_NAME)
+
+install: $(INSTALLDIR)/$(SO_NAME) $(INSTALLDIR)/$(LIB_NAME)
+
+uninstall:
+	rm -f $(INSTALLDIR)/$(LIB_NAME) $(INSTALLDIR)/$(SO_NAME)
 
 clean: clean_test clean_simple_demo clean_lib clean_profiling
 
