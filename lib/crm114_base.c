@@ -1246,6 +1246,94 @@ CRM114_ERR crm114_cb_write_text(const CRM114_CONTROLBLOCK *cb, const char filena
   return ret;
 }
 
+/**
+ * Close mmaped datablock.
+ */
+int crm114_db_close_mmap(CRM114_DATABLOCK *db)
+{
+    return munmap(db, db->cb.datablock_size);
+}
+
+/**
+ * Read existing datablock from file.
+ * 
+ * Note that this is read-only.
+ * The design assumes short-lived processes and few learning operations.
+ * To update a persistent datablock the process should use
+ * crm114_db_write_mmap(db, newfilename);
+ * rename(newfilename, oldfilename);
+ * 
+ * This will not affect currently running classifications, but only
+ * subsequently started processes. This avoids an explicit synchronization
+ * mechanism. (OTOH if you do have long-lived processes, then you have to
+ * add some signalling in order to have them 'reopen' their mmap.)
+ * 
+ */
+CRM114_DATABLOCK *crm114_db_open_mmap(const char filename[])
+{
+  int fd;
+  CRM114_DATABLOCK *mapdb;
+  struct stat statbuf;
+  size_t fsize;
+  long k;
+
+  k = stat(filename, &statbuf);
+  fsize = statbuf.st_size;
+        
+  /* create and size the file */
+  fd = open(filename, O_RDONLY);
+  if (fd == -1)
+      return NULL;
+  
+  mapdb = mmap(NULL, fsize, PROT_READ, MAP_PRIVATE, fd, 0);
+
+  if (MAP_FAILED == mapdb) {
+    mapdb = NULL;
+  }
+
+  close(fd);
+
+  return mapdb;
+}
+
+/**
+ * Write datablock to file.
+ */
+CRM114_ERR crm114_db_write_mmap(const CRM114_DATABLOCK *db, const char filename[])
+{
+  int fd, rc;
+  CRM114_DATABLOCK *mapdb;
+
+  /* create and size the file */
+  fd = open(filename, O_RDWR | O_CREAT | O_EXLOCK);
+  if (fd == -1)
+      return CRM114_OPEN_FAILED;
+
+  rc = lseek(fd, db->cb.datablock_size, SEEK_SET);
+  if (rc == -1) {
+      close(fd);
+      return CRM114_NOMEM;
+  }
+  
+  rc = write(fd, "", 1);
+  if (rc == -1) {
+      close(fd);
+      return CRM114_NOMEM;
+  }
+
+  /* mmap and copy */
+  mapdb = mmap(NULL, db->cb.datablock_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if (mapdb == MAP_FAILED) {
+      close(fd);
+      return CRM114_NOMEM;
+  }
+  memcpy(mapdb, db, db->cb.datablock_size);
+  munmap(mapdb, db->cb.datablock_size);
+  close(fd);
+
+  return CRM114_OK;
+}
+
 CRM114_ERR crm114_db_write_text_fp(const CRM114_DATABLOCK *db, FILE *fp)
 {
   (void)crm114_cb_write_text_fp(&db->cb, fp);

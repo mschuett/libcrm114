@@ -437,5 +437,10 @@ CRM114_CONTROLBLOCK *crm114_cb_read_text(const char filename[]);
 CRM114_DATABLOCK *crm114_db_read_text_fp(FILE *fp);
 CRM114_DATABLOCK *crm114_db_read_text(const char filename[]);
 
+// Persist data in shareable binary file
+char *crm114_dump_cb(CRM114_CONTROLBLOCK *cb);
+int crm114_db_close_mmap(CRM114_DATABLOCK *db);
+CRM114_DATABLOCK *crm114_db_open_mmap(const char filename[]);
+CRM114_ERR crm114_db_write_mmap(const CRM114_DATABLOCK *db, const char filename[]);
 
 #endif	// !__CRM114_LIB_H__

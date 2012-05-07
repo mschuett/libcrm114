@@ -40,6 +40,10 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+
 // Detect if compilation is occurring in a Microsoft compiler
 #if (defined (WIN32) || defined (WIN64) || defined (_WIN32) || defined (_WIN64))
 #define CRM_WINDOWS
