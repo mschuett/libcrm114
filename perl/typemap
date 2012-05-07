@@ -1,16 +1,13 @@
+CRM114_CONTROLBLOCK				T_OPAQUE_STRUCT
 CRM114_CONTROLBLOCK *				T_PTROBJ
+CRM114_DATABLOCK				T_OPAQUE_STRUCT
 CRM114_DATABLOCK *				T_PTROBJ
 CRM114_DATABLOCK **				T_PTROBJ
-CRM114_ERR					T_PTROBJ
+CRM114_ERR					T_IV
+CRM114_MATCHRESULT				T_OPAQUE_STRUCT
 CRM114_MATCHRESULT *				T_PTROBJ
 __off_t						T_PTROBJ
 __va_list					T_PTROBJ
-const CRM114_CONTROLBLOCK *			T_PTROBJ
-const CRM114_DATABLOCK *			T_PTROBJ
-const CRM114_MATCHRESULT *			T_PTROBJ
-const char *					T_PTROBJ
-const fpos_t *					T_PTROBJ
-const void *					T_PTROBJ
 fpos_t ( * ) ( void *, fpos_t, int )		T_PTROBJ
 fpos_t *					T_PTROBJ
 int ( * ) ( void * )				T_PTROBJ
@@ -19,7 +16,6 @@ int ( * ) ( void *, const char *, int )		T_PTROBJ
 int *						T_PTROBJ
 long *						T_PTROBJ
 size_t *					T_PTROBJ
-struct crm114_feature_row			T_OPAQUE_STRUCT
 unsigned long long				T_NV
 #############################################################################
 INPUT

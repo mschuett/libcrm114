@@ -26,7 +26,6 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
 	cb_setclassdefaults
 	cb_setdefaults
 	cb_setflags
-	cb_setpipeline
 	cb_setregex
 	cb_write_text
 	cb_write_text_fp
@@ -120,10 +119,6 @@ None by default.
   void crm114_cb_setdefaults(CRM114_CONTROLBLOCK *p_cb)
   CRM114_ERR crm114_cb_setflags
     (CRM114_CONTROLBLOCK *p_cb, unsigned long long flags)
-  CRM114_ERR crm114_cb_setpipeline
-    ( CRM114_CONTROLBLOCK *p_cb,
-      int pipe_len, int pipe_iters,
-      const int pipe_coeffs[UNIFIED_ITERS_MAX][UNIFIED_WINDOW_MAX] )
   CRM114_ERR crm114_cb_setregex(CRM114_CONTROLBLOCK *p_cb, const char regex[],
          int regex_len)
   CRM114_ERR crm114_cb_write_text(const CRM114_CONTROLBLOCK *cb, const char filename[])

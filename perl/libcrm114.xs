@@ -2,7 +2,8 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include <include/crm114_lib.h>
+#include <crm114_config.h>
+#include <crm114_lib.h>
 
 #include "const-c.inc"
 
@@ -12,13 +13,13 @@ INCLUDE: const-xs.inc
 
 void
 crm114_cb_getdimensions(p_cb, pipe_len, pipe_iters)
-	const CRM114_CONTROLBLOCK *	p_cb
+	CRM114_CONTROLBLOCK *	p_cb
 	int *	pipe_len
 	int *	pipe_iters
 
 CRM114_CONTROLBLOCK *
 crm114_cb_read_text(filename)
-	char	filename[]
+	char *	filename
 
 CRM114_CONTROLBLOCK *
 crm114_cb_read_text_fp(fp)
@@ -46,32 +47,25 @@ crm114_cb_setflags(p_cb, flags)
 	unsigned long long	flags
 
 CRM114_ERR
-crm114_cb_setpipeline(p_cb, pipe_len, pipe_iters, pipe_coeffs)
-	CRM114_CONTROLBLOCK *	p_cb
-	int	pipe_len
-	int	pipe_iters
-	int	pipe_coeffs[UNIFIED_ITERS_MAX][UNIFIED_WINDOW_MAX]
-
-CRM114_ERR
 crm114_cb_setregex(p_cb, regex, regex_len)
 	CRM114_CONTROLBLOCK *	p_cb
-	char	regex[]
+	char *	regex
 	int	regex_len
 
 CRM114_ERR
 crm114_cb_write_text(cb, filename)
-	const CRM114_CONTROLBLOCK *	cb
-	char	filename[]
+	CRM114_CONTROLBLOCK *	cb
+	char *	filename
 
 CRM114_ERR
 crm114_cb_write_text_fp(cb, fp)
-	const CRM114_CONTROLBLOCK *	cb
+	CRM114_CONTROLBLOCK *	cb
 	FILE *	fp
 
 CRM114_ERR
 crm114_classify_text(db, text, textlen, result)
 	CRM114_DATABLOCK *	db
-	char	text[]
+	char *	text
 	long	textlen
 	CRM114_MATCHRESULT *	result
 
@@ -81,11 +75,11 @@ crm114_db_close_mmap(db)
 
 CRM114_DATABLOCK *
 crm114_db_open_mmap(filename)
-	char	filename[]
+	char *	filename
 
 CRM114_DATABLOCK *
 crm114_db_read_text(filename)
-	char	filename[]
+	char *	filename
 
 CRM114_DATABLOCK *
 crm114_db_read_text_fp(fp)
@@ -93,17 +87,17 @@ crm114_db_read_text_fp(fp)
 
 CRM114_ERR
 crm114_db_write_mmap(db, filename)
-	const CRM114_DATABLOCK *	db
-	char	filename[]
+	CRM114_DATABLOCK *	db
+	char *	filename
 
 CRM114_ERR
 crm114_db_write_text(db, filename)
-	const CRM114_DATABLOCK *	db
-	char	filename[]
+	CRM114_DATABLOCK *	db
+	char *	filename
 
 CRM114_ERR
 crm114_db_write_text_fp(db, fp)
-	const CRM114_DATABLOCK *	db
+	CRM114_DATABLOCK *	db
 	FILE *	fp
 
 void
@@ -114,7 +108,7 @@ CRM114_ERR
 crm114_learn_text(db, whichclass, text, textlen)
 	CRM114_DATABLOCK **	db
 	int	whichclass
-	char	text[]
+	char *	text
 	long	textlen
 
 CRM114_CONTROLBLOCK *
@@ -126,12 +120,12 @@ crm114_new_db(p_cb)
 
 void
 crm114_show_result(name, r)
-	char	name[]
-	const CRM114_MATCHRESULT *	r
+	char *	name
+	CRM114_MATCHRESULT *	r
 
 void
 crm114_show_result_class(r, icls)
-	const CRM114_MATCHRESULT *	r
+	CRM114_MATCHRESULT *	r
 	int	icls
 
 const char *
