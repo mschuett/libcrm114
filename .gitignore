@@ -1,0 +1,7 @@
+nbproject
+lib/*.o
+lib/libcrm114.so
+lib/libcrm114.so.1
+simple_demo_datablock.txt
+tests/simple_demo
+tests/test
