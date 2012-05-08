@@ -71,6 +71,14 @@ BOOT:
 ### accessor functions for Perl
 
 void
+crm114_db_getinfo(p_db)
+    CRM114_DATABLOCK *  p_db
+  PPCODE:
+    /* get size and memory address */
+    XPUSHs(sv_2mortal(newSVuv(p_db->cb.datablock_size)));
+    XPUSHs(sv_2mortal(newSVuv(PTR2UV(p_db))));
+
+void
 crm114_db_getclasses(p_db)
     CRM114_DATABLOCK *  p_db
   PREINIT:
@@ -160,29 +168,41 @@ crm114_cb_read_text_fp(fp)
 void
 crm114_cb_reset(p_cb)
 	CRM114_CONTROLBLOCK *   p_cb
+  OUTPUT:
+    p_cb
 
 void
 crm114_cb_setblockdefaults(p_cb)
 	CRM114_CONTROLBLOCK *	p_cb
+  OUTPUT:
+    p_cb
 
 void
 crm114_cb_setclassdefaults(p_cb)
 	CRM114_CONTROLBLOCK *	p_cb
+  OUTPUT:
+    p_cb
 
 void
 crm114_cb_setdefaults(p_cb)
 	CRM114_CONTROLBLOCK *	p_cb
+  OUTPUT:
+    p_cb
 
 CRM114_ERR
 crm114_cb_setflags(p_cb, flags)
 	CRM114_CONTROLBLOCK *	p_cb
 	unsigned long long	flags
+  OUTPUT:
+    p_cb
 
 CRM114_ERR
 crm114_cb_setregex(p_cb, regex, regex_len)
 	CRM114_CONTROLBLOCK *	p_cb
 	char *	regex
 	int	regex_len
+  OUTPUT:
+    p_cb
 
 CRM114_ERR
 crm114_cb_write_text(cb, filename)
@@ -200,6 +220,8 @@ crm114_classify_text(db, text, textlen, result)
 	char *	text
 	long	textlen
 	CRM114_MATCHRESULT *	result
+  OUTPUT:
+    result
 
 int
 crm114_db_close_bin(db)
@@ -242,6 +264,8 @@ crm114_learn_text(db, whichclass, text, textlen)
 	int	whichclass
 	char *	text
 	long	textlen
+  OUTPUT:
+    db
 
 CRM114_CONTROLBLOCK *
 crm114_new_cb()
