@@ -1249,7 +1249,7 @@ CRM114_ERR crm114_cb_write_text(const CRM114_CONTROLBLOCK *cb, const char filena
 /**
  * Close mmaped datablock.
  */
-int crm114_db_close_mmap(CRM114_DATABLOCK *db)
+int crm114_db_close_bin(CRM114_DATABLOCK *db)
 {
     return munmap(db, db->cb.datablock_size);
 }
@@ -1260,7 +1260,7 @@ int crm114_db_close_mmap(CRM114_DATABLOCK *db)
  * Note that this is read-only.
  * The design assumes short-lived processes and few learning operations.
  * To update a persistent datablock the process should use
- * crm114_db_write_mmap(db, newfilename);
+ * crm114_db_write_bin(db, newfilename);
  * rename(newfilename, oldfilename);
  * 
  * This will not affect currently running classifications, but only
@@ -1269,7 +1269,7 @@ int crm114_db_close_mmap(CRM114_DATABLOCK *db)
  * add some signalling in order to have them 'reopen' their mmap.)
  * 
  */
-CRM114_DATABLOCK *crm114_db_open_mmap(const char filename[])
+CRM114_DATABLOCK *crm114_db_read_bin(const char filename[])
 {
   int fd;
   CRM114_DATABLOCK *mapdb;
@@ -1299,38 +1299,18 @@ CRM114_DATABLOCK *crm114_db_open_mmap(const char filename[])
 /**
  * Write datablock to file.
  */
-CRM114_ERR crm114_db_write_mmap(const CRM114_DATABLOCK *db, const char filename[])
+CRM114_ERR crm114_db_write_bin(const CRM114_DATABLOCK *db, const char filename[])
 {
-  int fd, rc;
-  CRM114_DATABLOCK *mapdb;
+  int rc;
+  FILE *fp;
 
-  /* create and size the file */
-  fd = open(filename, O_RDWR | O_CREAT | O_EXLOCK);
-  if (fd == -1)
-      return CRM114_OPEN_FAILED;
-
-  rc = lseek(fd, db->cb.datablock_size, SEEK_SET);
-  if (rc == -1) {
-      close(fd);
-      return CRM114_NOMEM;
-  }
-  
-  rc = write(fd, "", 1);
-  if (rc == -1) {
-      close(fd);
-      return CRM114_NOMEM;
-  }
-
-  /* mmap and copy */
-  mapdb = mmap(NULL, db->cb.datablock_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-  if (mapdb == MAP_FAILED) {
-      close(fd);
-      return CRM114_NOMEM;
-  }
-  memcpy(mapdb, db, db->cb.datablock_size);
-  munmap(mapdb, db->cb.datablock_size);
-  close(fd);
-
+  fp = fopen(filename, "wb");
+  if (fp == NULL)
+    return CRM114_OPEN_FAILED;
+  rc = fwrite(db, db->cb.datablock_size, 1, fp);
+  fclose(fp);
+  if (rc != 1)
+      return CRM114_UNK;
   return CRM114_OK;
 }
 
