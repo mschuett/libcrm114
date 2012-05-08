@@ -9,7 +9,7 @@ WriteMakefile(
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Classify/libcrm114.pm', # retrieve abstract from module
        AUTHOR         => 'Martin Schuette <info@mschuette.name>') : ()),
-    LIBS              => ['-lm '], # e.g., '-lm'
+    LIBS              => ['-L/usr/local/lib -lcrm114 -ltre'], # e.g., '-lm'
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
 	# Insert -I. if you add *.h files later:
     INC               => '-I../include', # e.g., '-I/usr/include/other'
