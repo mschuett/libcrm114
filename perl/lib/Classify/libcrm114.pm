@@ -30,11 +30,11 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
 	cb_write_text
 	cb_write_text_fp
 	classify_text
-	db_close_mmap
-	db_open_mmap
+	db_close_bin
+	db_read_bin
 	db_read_text
 	db_read_text_fp
-	db_write_mmap
+	db_write_bin
 	db_write_text
 	db_write_text_fp
 	free
@@ -125,11 +125,11 @@ None by default.
   CRM114_ERR crm114_cb_write_text_fp(const CRM114_CONTROLBLOCK *cb, FILE *fp)
   CRM114_ERR crm114_classify_text (CRM114_DATABLOCK *db, const char text[],
      long textlen, CRM114_MATCHRESULT *result)
-  int crm114_db_close_mmap(CRM114_DATABLOCK *db)
-  CRM114_DATABLOCK *crm114_db_open_mmap(const char filename[])
+  int crm114_db_close_bin(CRM114_DATABLOCK *db)
+  CRM114_DATABLOCK *crm114_db_read_bin(const char filename[])
   CRM114_DATABLOCK *crm114_db_read_text(const char filename[])
   CRM114_DATABLOCK *crm114_db_read_text_fp(FILE *fp)
-  CRM114_ERR crm114_db_write_mmap(const CRM114_DATABLOCK *db, const char filename[])
+  CRM114_ERR crm114_db_write_bin(const CRM114_DATABLOCK *db, const char filename[])
   CRM114_ERR crm114_db_write_text(const CRM114_DATABLOCK *db, const char filename[])
   CRM114_ERR crm114_db_write_text_fp(const CRM114_DATABLOCK *db, FILE *fp)
   void crm114_free(void *p)

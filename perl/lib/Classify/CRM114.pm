@@ -57,9 +57,9 @@ sub readfile {
 
     carp "$class->readfile($filename)" if ($debug);
 
-    $self->{db} = Classify::libcrm114::db_open_mmap($filename);
+    $self->{db} = Classify::libcrm114::db_read_bin($filename);
     unless ($self->{db}) {
-        croak("Error in Classify::libcrm114::db_open_mmap");
+        croak("Error in Classify::libcrm114::db_read_bin");
     }
     $self->{mmap} = 1;
 
@@ -80,7 +80,7 @@ sub DESTROY {
     my $self = shift;
     carp "DESTROYING $self" if ($debug);
     if (defined($self->{mmap}) and $self->{mmap}) {
-        Classify::libcrm114::db_close_mmap($self->{db});
+        Classify::libcrm114::db_close_bin($self->{db});
     }
 
     # TODO: check if and how to call C free()
@@ -92,7 +92,7 @@ sub DESTROY {
 sub writefile {
     my ($self, $filename) = @_;
     carp "writefile($filename)" if ($debug);
-    return Classify::libcrm114::db_write_mmap($self->{db}, $filename);
+    return Classify::libcrm114::db_write_bin($self->{db}, $filename);
 }
 
 sub learn {

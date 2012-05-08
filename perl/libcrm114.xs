@@ -202,11 +202,11 @@ crm114_classify_text(db, text, textlen, result)
 	CRM114_MATCHRESULT *	result
 
 int
-crm114_db_close_mmap(db)
+crm114_db_close_bin(db)
 	CRM114_DATABLOCK *	db
 
 CRM114_DATABLOCK *
-crm114_db_open_mmap(filename)
+crm114_db_read_bin(filename)
 	char *	filename
 
 CRM114_DATABLOCK *
@@ -218,7 +218,7 @@ crm114_db_read_text_fp(fp)
 	FILE *	fp
 
 CRM114_ERR
-crm114_db_write_mmap(db, filename)
+crm114_db_write_bin(db, filename)
 	CRM114_DATABLOCK *	db
 	char *	filename
 
