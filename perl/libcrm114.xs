@@ -238,7 +238,7 @@ crm114_free(p)
 
 CRM114_ERR
 crm114_learn_text(db, whichclass, text, textlen)
-	CRM114_DATABLOCK **	db
+	CRM114_DATABLOCK *&	db
 	int	whichclass
 	char *	text
 	long	textlen
