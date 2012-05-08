@@ -25,9 +25,7 @@ sub new {
     my $self = {};
     bless ($self, $class);
 
-    carp "$class->new("
-      . join(", ", map((defined $_ ? $_ : "undef"), ($flags, $datasize, $classref)))
-      . ")" if ($debug);
+	carp sprintf("%s->(0x%x, %u, %s)", $class, $flags, $datasize, $classref) if ($debug);
 
     # default values
     $flags    //= Classify::libcrm114::OSB;
@@ -38,8 +36,8 @@ sub new {
     my $cb = Classify::libcrm114::new_cb();
     Classify::libcrm114::cb_setflags($cb, $flags);
     Classify::libcrm114::cb_setclassdefaults($cb);
-    Classify::libcrm114::cb_setblockdefaults($cb);
     Classify::libcrm114::cb_setdatablock_size($cb, $datasize);
+    Classify::libcrm114::cb_setblockdefaults($cb);
     $self->{classmap} = {};
     my @classes = @$classref;
     for (my $i=0; $i < scalar(@classes); $i++) {
@@ -97,12 +95,12 @@ sub writefile {
 
 sub learn {
     my ($self, $class, $text) = @_;
-    croak("learn_text requires category and text as arguments")
+    croak("learn requires category and text as arguments")
       unless (defined $class && defined $text);
 
     my $err = Classify::libcrm114::learn_text($self->{db}, $self->{classmap}->{$class}, $text, length($text));
     if ($err != Classify::libcrm114::OK) {
-        croak("Classify::libcrm114::learn_text failed and returns " . Classify::libcrm114::strerror($err));
+        croak("Classify::libcrm114::learn_text failed and returns $err -- " . Classify::libcrm114::strerror($err));
     }
 }
 
