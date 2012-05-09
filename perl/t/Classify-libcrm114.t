@@ -8,8 +8,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 26;
 BEGIN { use_ok('Classify::libcrm114') };
+use lib "t";
+BEGIN { use_ok('SampleText') };
 
 #########################
 
@@ -32,8 +34,37 @@ ok(defined(Classify::libcrm114::NOMEM));
 is(Classify::libcrm114::OK, 0);
 is(0, Classify::libcrm114::OK);
 
-# memory alloc/free
+# test low-level interface, especially memory mallloc/realloc/free
 my $cb = Classify::libcrm114::new_cb();
 ok(defined($cb));
 ok($cb);
+
+Classify::libcrm114::cb_setflags($cb, Classify::libcrm114::HYPERSPACE);
+Classify::libcrm114::cb_setclassdefaults($cb);
+Classify::libcrm114::cb_setdatablock_size($cb, 25200);
+Classify::libcrm114::cb_setblockdefaults($cb);
+Classify::libcrm114::cb_setclassname($cb, 0, 'A');
+Classify::libcrm114::cb_setclassname($cb, 1, 'B');
+my $db = Classify::libcrm114::new_db($cb);
+ok($db);
+my ($size, $addr) = Classify::libcrm114::db_getinfo($db);
+my $original_addr = $addr;
+is($size, 25200);
+
+my ($err, $class, $prob, $pR, $unk);
+$err = Classify::libcrm114::learn_text($db, 0, SampleText::Alice(), length(SampleText::Alice()));
+is($err, Classify::libcrm114::OK);
+$err = Classify::libcrm114::learn_text($db, 1, SampleText::Macbeth(), length(SampleText::Macbeth()));
+is($err, Classify::libcrm114::OK);
+# check successful resize
+($size, $addr) = Classify::libcrm114::db_getinfo($db);
+ok($original_addr != $addr);
+ok($size > 25200);
+
+($err, $class, $prob, $pR, $unk) = Classify::libcrm114::classify($db, SampleText::Hound_frag(), length(SampleText::Hound_frag()));
+is($err, Classify::libcrm114::OK);
+is($class, "B");
+is(sprintf("%.3f", $prob), "0.458");
+is(sprintf("%.6f", $pR), "-0.073242");
+is($unk, 180);
 
