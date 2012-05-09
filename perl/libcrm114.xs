@@ -6,7 +6,84 @@
 #include <crm114_structs.h>
 #include <crm114_lib.h>
 
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+
 #include "const-c.inc"
+
+// Persist data in shareable binary file
+CRM114_ERR crm114_db_write_bin(const CRM114_DATABLOCK *db, const char filename[]);
+CRM114_DATABLOCK *crm114_db_read_bin(const char filename[]);
+int crm114_db_close_bin(CRM114_DATABLOCK *db);
+
+/**
+ * Write datablock to file.
+ */
+CRM114_ERR crm114_db_write_bin(const CRM114_DATABLOCK *db, const char filename[])
+{
+  int rc;
+  FILE *fp;
+
+  fp = fopen(filename, "wb");
+  if (fp == NULL)
+    return CRM114_OPEN_FAILED;
+  rc = fwrite(db, db->cb.datablock_size, 1, fp);
+  fclose(fp);
+  if (rc != 1)
+      return CRM114_UNK;
+  return CRM114_OK;
+}
+
+/**
+ * Read existing datablock from file.
+ * 
+ * Note that this is read-only.
+ * The design assumes short-lived processes and few learning operations.
+ * To update a persistent datablock the process should use
+ * crm114_db_write_bin(db, newfilename);
+ * rename(newfilename, oldfilename);
+ * 
+ * This will not affect currently running classifications, but only
+ * subsequently started processes. This avoids an explicit synchronization
+ * mechanism. (OTOH if you do have long-lived processes, then you have to
+ * add some signalling in order to have them 'reopen' their mmap.)
+ * 
+ */
+CRM114_DATABLOCK *crm114_db_read_bin(const char filename[])
+{
+  int fd;
+  CRM114_DATABLOCK *mapdb;
+  struct stat statbuf;
+  size_t fsize;
+  long k;
+
+  k = stat(filename, &statbuf);
+  fsize = statbuf.st_size;
+        
+  /* create and size the file */
+  fd = open(filename, O_RDONLY);
+  if (fd == -1)
+      return NULL;
+  
+  mapdb = mmap(NULL, fsize, PROT_READ, MAP_PRIVATE, fd, 0);
+
+  if (MAP_FAILED == mapdb) {
+    mapdb = NULL;
+  }
+
+  close(fd);
+
+  return mapdb;
+}
+
+/**
+ * Close mmaped datablock.
+ */
+int crm114_db_close_bin(CRM114_DATABLOCK *db)
+{
+    return munmap(db, db->cb.datablock_size);
+}
 
 MODULE = Classify::libcrm114		PACKAGE = Classify::libcrm114		PREFIX = crm114_
 
