@@ -18,14 +18,16 @@ our @EXPORT = qw(
 
 our $VERSION = '0.01';
 
-my $debug = 1;
+my $debug = 0;
 
 sub new {
     my ($class, $flags, $datasize, $classref) = @_;
     my $self = {};
     bless ($self, $class);
 
-	carp sprintf("%s->(0x%x, %u, %s)", $class, $flags, $datasize, $classref) if ($debug);
+	carp sprintf("%s->(0x%x, %s, %s)", $class,
+		$flags // 0, $datasize // "undef",
+		$classref // "undef") if ($debug);
 
     # default values
     $flags    //= Classify::libcrm114::OSB;

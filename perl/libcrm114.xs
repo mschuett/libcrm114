@@ -132,7 +132,7 @@ crm114_classify(db, text, textlen)
     SV *retptr;
   PPCODE:
     Newx(result, 1, CRM114_MATCHRESULT);
-    warn("now calling crm114_classify_text(%p, %p, %zu, %p)\n", &db, text, textlen, result);
+    //warn("now calling crm114_classify_text(%p, %p, %zu, %p)\n", &db, text, textlen, result);
     err = crm114_classify_text(db, text, textlen, result);
     EXTEND(SP, 6);
     PUSHs(sv_2mortal(newSViv(err)));
