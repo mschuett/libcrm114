@@ -1,6 +1,0 @@
-Revision history for Perl extension Classify::libcrm114.
-
-0.01  Tue May  8 00:05:32 2012
-	- original version; created by h2xs 1.23 with options
-		-dOxe -b 5.12.0 -n Classify::libcrm114 -p crm114_ --skip-ppport include/crm114_lib.h -lm -tre
-
