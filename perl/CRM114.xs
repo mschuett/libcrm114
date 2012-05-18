@@ -85,7 +85,7 @@ int crm114_db_close_bin(CRM114_DATABLOCK *db)
     return munmap(db, db->cb.datablock_size);
 }
 
-MODULE = Classify::libcrm114		PACKAGE = Classify::libcrm114		PREFIX = crm114_
+MODULE = Text::AI::CRM114		PACKAGE = Text::AI::libcrm114		PREFIX = crm114_
 
 INCLUDE: const-xs.inc
 
@@ -94,7 +94,7 @@ PROTOTYPES: ENABLE
 BOOT:
 {
     HV *stash;
-    stash = gv_stashpv("Classify::libcrm114", TRUE);
+    stash = gv_stashpv("Text::AI::libcrm114", TRUE);
     newCONSTSUB(stash, "OK",          newSViv(CRM114_OK));
     newCONSTSUB(stash, "UNK",         newSViv(CRM114_UNK));
     newCONSTSUB(stash, "BADARG",      newSViv(CRM114_BADARG));

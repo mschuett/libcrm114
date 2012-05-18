@@ -1,14 +1,25 @@
-package Classify::CRM114;
+# import XS interface into namespace Text::AI::libcrm114
+package Text::AI::libcrm114;
+
+BEGIN {
+    # execute first, so all constants are defined
+    require XSLoader;
+    our $VERSION = '0.02';
+    XSLoader::load('Text::AI::CRM114', $VERSION);
+}
+
+# main package
+package Text::AI::CRM114;
 
 =head1 NAME
 
-Classify::CRM114 - Perl interface for CRM114
+Text::AI::CRM114 - Perl interface for CRM114
 
 =head1 SYNOPSIS
 
-  use Classify::CRM114;
-  my $db = Classify::CRM114->new(
-    Classify::CRM114::OSBF_BAYES,
+  use Text::AI::CRM114;
+  my $db = Text::AI::CRM114->new(
+    Text::AI::CRM114::OSBF_BAYES,
     8*1024*1024, ["Alice", "Macbeth"]);
 
   $db->learn("Alice", "Alice was beginning to ...");
@@ -16,7 +27,7 @@ Classify::CRM114 - Perl interface for CRM114
 
   my @ret = $db->classify_text("The Mole had been working very hard all the morning ...");
 
-  say "Best classification is $ret[1]" unless ($ret[0] != Classify::CRM114::OK);
+  say "Best classification is $ret[1]" unless ($ret[0] != Text::AI::CRM114::OK);
 
 =head1 DESCRIPTION
 
@@ -30,12 +41,8 @@ use 5.012000;
 use strict;
 use warnings;
 use Carp;
-use Classify::libcrm114;
 
 # no exports
-
-our $VERSION = '0.02';
-
 my $debug = 0;
 
 =head1 CONSTANTS
@@ -43,65 +50,65 @@ my $debug = 0;
 C<libcrm114> uses several constants as status return values and to
 set the classification algorithm of a new datablock. -- These constants
 are accessible in this module's namespace, for example
-C<Classify::CRM114::OK> and C<Classify::CRM114::OSB_WINNOW>.
+C<Text::AI::CRM114::OK> and C<Text::AI::CRM114::OSB_WINNOW>.
 
 =cut
 use constant {
-	OK                     => Classify::libcrm114::OK,
-    UNK                    => Classify::libcrm114::UNK,
-    BADARG                 => Classify::libcrm114::BADARG,
-    NOMEM                  => Classify::libcrm114::NOMEM,
-    REGEX_ERR              => Classify::libcrm114::REGEX_ERR,
-    FULL                   => Classify::libcrm114::FULL,
-    CLASS_FULL             => Classify::libcrm114::CLASS_FULL,
-    OPEN_FAILED            => Classify::libcrm114::OPEN_FAILED,
-    NOT_YET_IMPLEMENTED    => Classify::libcrm114::NOT_YET_IMPLEMENTED,
-    FROMSTART              => Classify::libcrm114::FROMSTART,
-    FROMNEXT               => Classify::libcrm114::FROMNEXT,
-    FROMEND                => Classify::libcrm114::FROMEND,
-    NEWEND                 => Classify::libcrm114::NEWEND,
-    FROMCURRENT            => Classify::libcrm114::FROMCURRENT,
-    NOCASE                 => Classify::libcrm114::NOCASE,
-    ABSENT                 => Classify::libcrm114::ABSENT,
-    BASIC                  => Classify::libcrm114::BASIC,
-    BACKWARDS              => Classify::libcrm114::BACKWARDS,
-    LITERAL                => Classify::libcrm114::LITERAL,
-    NOMULTILINE            => Classify::libcrm114::NOMULTILINE,
-    BYCHAR                 => Classify::libcrm114::BYCHAR,
-    STRING                 => Classify::libcrm114::STRING,
-    APPEND                 => Classify::libcrm114::APPEND,
-    REFUTE                 => Classify::libcrm114::REFUTE,
-    MICROGROOM             => Classify::libcrm114::MICROGROOM,
-    MARKOVIAN              => Classify::libcrm114::MARKOVIAN,
-    OSB_BAYES              => Classify::libcrm114::OSB_BAYES,
-    OSB                    => Classify::libcrm114::OSB,
-    CORRELATE              => Classify::libcrm114::CORRELATE,
-    OSB_WINNOW             => Classify::libcrm114::OSB_WINNOW,
-    WINNOW                 => Classify::libcrm114::WINNOW,
-    CHI2                   => Classify::libcrm114::CHI2,
-    UNIQUE                 => Classify::libcrm114::UNIQUE,
-    ENTROPY                => Classify::libcrm114::ENTROPY,
-    OSBF                   => Classify::libcrm114::OSBF,
-    OSBF_BAYES             => Classify::libcrm114::OSBF_BAYES,
-    HYPERSPACE             => Classify::libcrm114::HYPERSPACE,
-    UNIGRAM                => Classify::libcrm114::UNIGRAM,
-    CROSSLINK              => Classify::libcrm114::CROSSLINK,
-    READLINE               => Classify::libcrm114::READLINE,
-    DEFAULT                => Classify::libcrm114::DEFAULT,
-    SVM                    => Classify::libcrm114::SVM,
-    FSCM                   => Classify::libcrm114::FSCM,
-    NEURAL_NET             => Classify::libcrm114::NEURAL_NET,
-    ERASE                  => Classify::libcrm114::ERASE,
-    PCA                    => Classify::libcrm114::PCA,
-    BOOST                  => Classify::libcrm114::BOOST,
-    FLAGS_CLASSIFIERS_MASK => Classify::libcrm114::FLAGS_CLASSIFIERS_MASK,
+    OK                     => Text::AI::libcrm114::OK,
+    UNK                    => Text::AI::libcrm114::UNK,
+    BADARG                 => Text::AI::libcrm114::BADARG,
+    NOMEM                  => Text::AI::libcrm114::NOMEM,
+    REGEX_ERR              => Text::AI::libcrm114::REGEX_ERR,
+    FULL                   => Text::AI::libcrm114::FULL,
+    CLASS_FULL             => Text::AI::libcrm114::CLASS_FULL,
+    OPEN_FAILED            => Text::AI::libcrm114::OPEN_FAILED,
+    NOT_YET_IMPLEMENTED    => Text::AI::libcrm114::NOT_YET_IMPLEMENTED,
+    FROMSTART              => Text::AI::libcrm114::FROMSTART,
+    FROMNEXT               => Text::AI::libcrm114::FROMNEXT,
+    FROMEND                => Text::AI::libcrm114::FROMEND,
+    NEWEND                 => Text::AI::libcrm114::NEWEND,
+    FROMCURRENT            => Text::AI::libcrm114::FROMCURRENT,
+    NOCASE                 => Text::AI::libcrm114::NOCASE,
+    ABSENT                 => Text::AI::libcrm114::ABSENT,
+    BASIC                  => Text::AI::libcrm114::BASIC,
+    BACKWARDS              => Text::AI::libcrm114::BACKWARDS,
+    LITERAL                => Text::AI::libcrm114::LITERAL,
+    NOMULTILINE            => Text::AI::libcrm114::NOMULTILINE,
+    BYCHAR                 => Text::AI::libcrm114::BYCHAR,
+    STRING                 => Text::AI::libcrm114::STRING,
+    APPEND                 => Text::AI::libcrm114::APPEND,
+    REFUTE                 => Text::AI::libcrm114::REFUTE,
+    MICROGROOM             => Text::AI::libcrm114::MICROGROOM,
+    MARKOVIAN              => Text::AI::libcrm114::MARKOVIAN,
+    OSB_BAYES              => Text::AI::libcrm114::OSB_BAYES,
+    OSB                    => Text::AI::libcrm114::OSB,
+    CORRELATE              => Text::AI::libcrm114::CORRELATE,
+    OSB_WINNOW             => Text::AI::libcrm114::OSB_WINNOW,
+    WINNOW                 => Text::AI::libcrm114::WINNOW,
+    CHI2                   => Text::AI::libcrm114::CHI2,
+    UNIQUE                 => Text::AI::libcrm114::UNIQUE,
+    ENTROPY                => Text::AI::libcrm114::ENTROPY,
+    OSBF                   => Text::AI::libcrm114::OSBF,
+    OSBF_BAYES             => Text::AI::libcrm114::OSBF_BAYES,
+    HYPERSPACE             => Text::AI::libcrm114::HYPERSPACE,
+    UNIGRAM                => Text::AI::libcrm114::UNIGRAM,
+    CROSSLINK              => Text::AI::libcrm114::CROSSLINK,
+    READLINE               => Text::AI::libcrm114::READLINE,
+    DEFAULT                => Text::AI::libcrm114::DEFAULT,
+    SVM                    => Text::AI::libcrm114::SVM,
+    FSCM                   => Text::AI::libcrm114::FSCM,
+    NEURAL_NET             => Text::AI::libcrm114::NEURAL_NET,
+    ERASE                  => Text::AI::libcrm114::ERASE,
+    PCA                    => Text::AI::libcrm114::PCA,
+    BOOST                  => Text::AI::libcrm114::BOOST,
+    FLAGS_CLASSIFIERS_MASK => Text::AI::libcrm114::FLAGS_CLASSIFIERS_MASK,
 };
 
 =head1 METHODS
 
 =over
 
-=item Classify::CRM114->new($flags, $datasize, $classref)
+=item Text::AI::CRM114->new($flags, $datasize, $classref)
 
 Creates a new instance.
 
@@ -111,9 +118,9 @@ Creates a new instance.
 
 sets the classification algorithm, recommended values are 
 
-C<Classify::CRM114::OSB_BAYES> (default), 
-C<Classify::CRM114::OSB_WINNOW>, or
-C<Classify::CRM114::HYPERSPACE>.
+C<Text::AI::CRM114::OSB_BAYES> (default), 
+C<Text::AI::CRM114::OSB_WINNOW>, or
+C<Text::AI::CRM114::HYPERSPACE>.
 C<libcrm114> includes some more algorithms (SVM, PCA, FSCM) which
 may or may not be production ready.
 
@@ -145,22 +152,22 @@ sub new {
     $classref //= ['A', 'B'];
 
     # now set up the C structs
-    my $cb = Classify::libcrm114::new_cb();
-    Classify::libcrm114::cb_setflags($cb, $flags);
-    Classify::libcrm114::cb_setclassdefaults($cb);
-    Classify::libcrm114::cb_setdatablock_size($cb, $datasize);
-    Classify::libcrm114::cb_setblockdefaults($cb);
+    my $cb = Text::AI::libcrm114::new_cb();
+    Text::AI::libcrm114::cb_setflags($cb, $flags);
+    Text::AI::libcrm114::cb_setclassdefaults($cb);
+    Text::AI::libcrm114::cb_setdatablock_size($cb, $datasize);
+    Text::AI::libcrm114::cb_setblockdefaults($cb);
     $self->{classmap} = {};
     my @classes = @$classref;
     for (my $i=0; $i < scalar(@classes); $i++) {
-        Classify::libcrm114::cb_setclassname($cb, $i, $classes[$i]);
+        Text::AI::libcrm114::cb_setclassname($cb, $i, $classes[$i]);
         $self->{classmap}->{$classes[$i]} = $i;
     }
-    $self->{db} = Classify::libcrm114::new_db($cb);
+    $self->{db} = Text::AI::libcrm114::new_db($cb);
     return $self;
 }
 
-=item Classify::CRM114->readfile($filename)
+=item Text::AI::CRM114->readfile($filename)
 
 Creates a new instance by reading a previously saved CRM114 DB from C<$filename>.
 
@@ -173,13 +180,13 @@ sub readfile {
 
     carp "$class->readfile($filename)" if ($debug);
 
-    $self->{db} = Classify::libcrm114::db_read_bin($filename);
+    $self->{db} = Text::AI::libcrm114::db_read_bin($filename);
     unless ($self->{db}) {
-        croak("Error in Classify::libcrm114::db_read_bin");
+        croak("Error in Text::AI::libcrm114::db_read_bin");
     }
     $self->{mmap} = 1;
 
-    my @classes = Classify::libcrm114::db_getclasses($self->{db});
+    my @classes = Text::AI::libcrm114::db_getclasses($self->{db});
     $self->{classmap} = {};
     for (my $i=0; $i < scalar(@classes); $i++) {
         $self->{classmap}->{$classes[$i]} = $i;
@@ -203,11 +210,11 @@ sub DESTROY {
     my $self = shift;
     carp "DESTROYING $self" if ($debug);
     if (defined($self->{mmap}) and $self->{mmap}) {
-        Classify::libcrm114::db_close_bin($self->{db});
+        Text::AI::libcrm114::db_close_bin($self->{db});
     }
 
     # TODO: check if and how to call C free()
-    #Classify::libcrm114::DESTROY($self->{db});
+    #Text::AI::libcrm114::DESTROY($self->{db});
     #carp "DESTROYING ..." if ($debug);
     return;
 }
@@ -221,7 +228,7 @@ Writes the DB into a (binary) file.
 sub writefile {
     my ($self, $filename) = @_;
     carp "writefile($filename)" if ($debug);
-    return Classify::libcrm114::db_write_bin($self->{db}, $filename);
+    return Text::AI::libcrm114::db_write_bin($self->{db}, $filename);
 }
 
 =item $db->learn($class, $text)
@@ -235,9 +242,9 @@ sub learn {
     croak("learn requires category and text as arguments")
         unless (defined $class && defined $text);
 
-    my $err = Classify::libcrm114::learn_text($self->{db}, $self->{classmap}->{$class}, $text, length($text));
+    my $err = Text::AI::libcrm114::learn_text($self->{db}, $self->{classmap}->{$class}, $text, length($text));
     if ($err != OK) {
-        croak("Classify::libcrm114::learn_text failed and returns $err -- " . Classify::libcrm114::strerror($err));
+        croak("Text::AI::libcrm114::learn_text failed and returns $err -- " . Text::AI::libcrm114::strerror($err));
     }
 }
 
@@ -258,7 +265,7 @@ Returns a list of five scalar values:
 
 =item $err
 
-A numeric error code, should be C<Classify::libcrm114::OK>
+A numeric error code, should be C<Text::AI::libcrm114::OK>
 
 =item $errmsg
 
@@ -295,8 +302,8 @@ sub classify {
     croak("classify_text requires a text as argument")
         unless (defined $text);
 
-    my ($err, $class, $prob, $pR, $unk) = Classify::libcrm114::classify($self->{db}, $text, length($text));
-    my $errmsg = Classify::libcrm114::strerror($err);
+    my ($err, $class, $prob, $pR, $unk) = Text::AI::libcrm114::classify($self->{db}, $text, length($text));
+    my $errmsg = Text::AI::libcrm114::strerror($err);
 
     if (!$verbatim and $self->{classmap}->{$class}) {
         # change prob and pR values relative to second class
@@ -314,13 +321,13 @@ sub classify {
 This is my first attempt to write a Perl module, so all hints and improvements
 are appreciated.
 
-I would like to hide the constants from C<Classify::libcrm114>.
+I would like to hide the constants from C<Text::AI::libcrm114>.
 I guess it is impossible to eliminate the error codes (unless one wants
 to completely hide them from the user and simply C<croak> on every error).
 But at least for the algorithm selection I consider string arguments, i.e.
-the user should give us the string C<OSBF> and we map it to C<Classify::libcrm114::OSBF>.
+the user should give us the string C<OSBF> and we map it to C<Text::AI::libcrm114::OSBF>.
 
-I wonder if we should ensure Classify::libcrm114::OK maps to 0, as this makes
+I wonder if we should ensure Text::AI::libcrm114::OK maps to 0, as this makes
 the caller's return value checking easier.
 Currently this is trivial because it already is 0 in C<libcrm114>.
 If that should change we would have to insert a rewrite into

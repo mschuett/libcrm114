@@ -4,7 +4,7 @@ Makefile.old
 blib/
 const-c.inc
 const-xs.inc
-libcrm114.bs
-libcrm114.c
-libcrm114.o
+CRM114.bs
+CRM114.c
+CRM114.o
 pm_to_blib

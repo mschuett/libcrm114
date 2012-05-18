@@ -1,10 +1,10 @@
-Changes
-libcrm114.xs
+CRM114.xs
 Makefile.PL
 MANIFEST
 README
 typemap
-t/Classify-libcrm114.t
+t/Text-AI-libcrm114.t
+t/Text-AI-CRM114.t
 fallback/const-c.inc
 fallback/const-xs.inc
-lib/Classify/libcrm114.pm
+lib/Text/AI/CRM114.pm

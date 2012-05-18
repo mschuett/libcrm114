@@ -40,11 +40,11 @@ my $types = {map {($_, 1)} qw()};
 my @names = (qw());
 
 print constant_types(), "\n"; # macro defs
-foreach (C_constant ("Classify::libcrm114", 'constant', 're', $types, undef, 3, @names) ) {
+foreach (C_constant ("Text::AI::libcrm114", 'constant', 're', $types, undef, 3, @names) ) {
     print $_, "\n"; # C constant subs
 }
 print "\n#### XS Section:\n";
-print XS_constant ("Classify::libcrm114", $types);
+print XS_constant ("Text::AI::libcrm114", $types);
 __END__
    */
 
