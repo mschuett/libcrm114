@@ -1,6 +1,8 @@
+use strict;
+use warnings;
+
 # import XS interface into namespace Text::AI::libcrm114
 package Text::AI::libcrm114;
-
 BEGIN {
     # execute first, so all constants are defined
     require XSLoader;
@@ -37,9 +39,6 @@ a library that implements several text classification algorithms.
 
 =cut
 
-use 5.012000;
-use strict;
-use warnings;
 use Carp;
 
 # no exports
