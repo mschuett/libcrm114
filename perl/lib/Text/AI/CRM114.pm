@@ -6,7 +6,7 @@ package Text::AI::libcrm114;
 BEGIN {
     # execute first, so all constants are defined
     require XSLoader;
-    our $VERSION = '0.02';
+    our $VERSION = '0.03';
     XSLoader::load('Text::AI::CRM114', $VERSION);
 }
 
@@ -348,7 +348,8 @@ AI::CRM114, a module using the crm language interpreter: L<https://metacpan.org/
 
 =head1 HISTORY
 
-v0.02 initial release
+v0.03 initial CPAN release
+v0.02 initial push to github
 
 =head1 AUTHOR
 
