@@ -243,7 +243,7 @@ sub learn {
 
     my $err = Text::AI::libcrm114::learn_text($self->{db}, $self->{classmap}->{$class}, $text, length($text));
     if ($err != OK) {
-        croak("Text::AI::libcrm114::learn_text failed and returns $err -- " . Text::AI::libcrm114::strerror($err));
+        croak("Text::AI::libcrm114::learn_text failed and returns #$err");
     }
 }
 
@@ -265,10 +265,6 @@ Returns a list of five scalar values:
 =item $err
 
 A numeric error code, should be C<Text::AI::libcrm114::OK>
-
-=item $errmsg
-
-A short error message (for error display or logging).
 
 =item $class
 
@@ -302,7 +298,6 @@ sub classify {
         unless (defined $text);
 
     my ($err, $class, $prob, $pR, $unk) = Text::AI::libcrm114::classify($self->{db}, $text, length($text));
-    my $errmsg = Text::AI::libcrm114::strerror($err);
 
     if (!$verbatim and $self->{classmap}->{$class}) {
         # change prob and pR values relative to second class
@@ -310,7 +305,7 @@ sub classify {
         $pR = -$pR;
     }
 
-    return ($err, $errmsg, $class, $prob, $pR);
+    return ($err, $class, $prob, $pR);
 }
 
 =back

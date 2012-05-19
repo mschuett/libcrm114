@@ -17,6 +17,7 @@ int *						T_PTROBJ
 long *						T_PTROBJ
 size_t *					T_PTROBJ
 unsigned long long				T_NV
+const char *				T_PV
 #############################################################################
 INPUT
 T_OPAQUE_STRUCT

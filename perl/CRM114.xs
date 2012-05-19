@@ -361,7 +361,3 @@ crm114_show_result_class(r, icls)
 	CRM114_MATCHRESULT *	r
 	int	icls
 
-const char *
-crm114_strerror(err)
-	CRM114_ERR	err
-
