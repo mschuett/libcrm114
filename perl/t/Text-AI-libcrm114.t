@@ -49,7 +49,8 @@ my $db = Text::AI::libcrm114::new_db($cb);
 ok($db);
 my ($size, $addr) = Text::AI::libcrm114::db_getinfo($db);
 my $original_addr = $addr;
-is($size, 25200);
+# not a nice test, but on i386 this is 25200 and on amd64 it becomes 29304
+ok($size >= 25200 && $size <= 32000);
 
 my ($err, $class, $prob, $pR, $unk);
 $err = Text::AI::libcrm114::learn_text($db, 0, SampleText::Alice(), length(SampleText::Alice()));
