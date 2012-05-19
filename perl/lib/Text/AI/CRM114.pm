@@ -6,7 +6,7 @@ package Text::AI::libcrm114;
 BEGIN {
     # execute first, so all constants are defined
     require XSLoader;
-    our $VERSION = '0.03';
+    our $VERSION = '0.04';
     XSLoader::load('Text::AI::CRM114', $VERSION);
 }
 
@@ -315,13 +315,7 @@ sub classify {
 This is my first attempt to write a Perl module, so all hints and improvements
 are appreciated.
 
-I would like to hide the constants from C<Text::AI::libcrm114>.
-I guess it is impossible to eliminate the error codes (unless one wants
-to completely hide them from the user and simply C<croak> on every error).
-But at least for the algorithm selection I consider string arguments, i.e.
-the user should give us the string C<OSBF> and we map it to C<Text::AI::libcrm114::OSBF>.
-
-I wonder if we should ensure Text::AI::libcrm114::OK maps to 0, as this makes
+I wonder if we should ensure Text::AI::CRM114::OK maps to 0, as this makes
 the caller's return value checking easier.
 Currently this is trivial because it already is 0 in C<libcrm114>.
 If that should change we would have to insert a rewrite into
@@ -343,8 +337,21 @@ AI::CRM114, a module using the crm language interpreter: L<https://metacpan.org/
 
 =head1 HISTORY
 
+=over
+
+=item *
+
+v0.04 remove crm114_strerror, which is not in libcrm114 tarball
+
+=item *
+
 v0.03 initial CPAN release
+
+=item *
+
 v0.02 initial push to github
+
+=back
 
 =head1 AUTHOR
 
