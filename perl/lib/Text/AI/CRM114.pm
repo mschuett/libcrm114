@@ -21,13 +21,14 @@ Text::AI::CRM114 - Perl interface for CRM114
 
   use Text::AI::CRM114;
   my $db = Text::AI::CRM114->new(
-    Text::AI::CRM114::OSBF_BAYES,
-    8*1024*1024, ["Alice", "Macbeth"]);
+    flags   => Text::AI::CRM114::OSBF_BAYES,
+    classes => ["Alice", "Macbeth"]
+  );
 
   $db->learn("Alice", "Alice was beginning to ...");
   $db->learn("Macbeth", "When shall we three meet again ...");
 
-  my @ret = $db->classify_text("The Mole had been working very hard all the morning ...");
+  my @ret = $db->classify("The Mole had been working very hard all the morning ...");
 
   say "Best classification is $ret[1]" unless ($ret[0] != Text::AI::CRM114::OK);
 
@@ -107,57 +108,59 @@ use constant {
 
 =over
 
-=item Text::AI::CRM114->new($flags, $datasize, $classref)
+=item Text::AI::CRM114->new(%options)
 
-Creates a new instance.
+Creates a new instance. Options and their default values are:
 
 =over
 
-=item $flags
+=item flags => Text::AI::CRM114::OSB_BAYES
 
 sets the classification algorithm, recommended values are 
 
-C<Text::AI::CRM114::OSB_BAYES> (default), 
+C<Text::AI::CRM114::OSB_BAYES>, 
 C<Text::AI::CRM114::OSB_WINNOW>, or
 C<Text::AI::CRM114::HYPERSPACE>.
 C<libcrm114> includes some more algorithms (SVM, PCA, FSCM) which
 may or may not be production ready.
 
-=item $datasize
+=item datasize => 0
 
-the memory size of learned data (default is 4 Mb).
-Note that some algorithms have to grow the datasize when learning.
+the intended memory size for learned data.
 
-=item $classref
+Note that this parameter has no immediate effect! C<libcrm114> always creates
+its data structure with a default size (depending on the algorithm, 8M for OSB);
+this parameter is only used for some algorithms that might grow their dataset
+after learning many items.
 
-a list of classes passed by reference (default: C<['A', 'B']>).
+=item classes => ['A', 'B']
+
+a list of classes passed by reference.
 
 =back
 
 =cut
 
 sub new {
-    my ($class, $flags, $datasize, $classref) = @_;
-    my $self = {};
+	my $class = shift;
+	my $self = {
+		flags => OSB_BAYES,
+		datasize => 0,
+		classes => ['A', 'B'],
+		@_ };
     bless ($self, $class);
 
-    carp sprintf("%s->(0x%x, %s, %s)", $class,
-        $flags // 0, $datasize // "undef",
-        $classref // "undef") if ($debug);
-
-    # default values
-    $flags    //= OSB;
-    $datasize //= 4*1024*1024; # 4Mb
-    $classref //= ['A', 'B'];
+	carp sprintf("%s->(0x%x, %s, %s)", $class, $self->{flags},
+		$self->{datasize}, $self->{classes}) if ($debug);
 
     # now set up the C structs
     my $cb = Text::AI::libcrm114::new_cb();
-    Text::AI::libcrm114::cb_setflags($cb, $flags);
+    Text::AI::libcrm114::cb_setflags($cb, $self->{flags});
     Text::AI::libcrm114::cb_setclassdefaults($cb);
-    Text::AI::libcrm114::cb_setdatablock_size($cb, $datasize);
+    Text::AI::libcrm114::cb_setdatablock_size($cb, $self->{datasize});
     Text::AI::libcrm114::cb_setblockdefaults($cb);
     $self->{classmap} = {};
-    my @classes = @$classref;
+    my @classes = @{$self->{classes}};
     for (my $i=0; $i < scalar(@classes); $i++) {
         Text::AI::libcrm114::cb_setclassname($cb, $i, $classes[$i]);
         $self->{classmap}->{$classes[$i]} = $i;
@@ -338,6 +341,10 @@ AI::CRM114, a module using the crm language interpreter: L<https://metacpan.org/
 =head1 HISTORY
 
 =over
+
+=item *
+
+v0.05 change new() parameter passing from array to hash
 
 =item *
 

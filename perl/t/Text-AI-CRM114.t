@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 46;
+use Test::More tests => 48;
 BEGIN { use_ok('Text::AI::CRM114') };
 use lib 't';
 BEGIN { use_ok('SampleText') };
@@ -11,7 +11,11 @@ my $db = Text::AI::CRM114->new();
 isa_ok($db, 'Text::AI::CRM114');
 can_ok($db, qw(learn classify writefile));
 
-$db = Text::AI::CRM114->new(Text::AI::CRM114::OSB, 8000000, ["Alice", "Macbeth"]);
+$db = Text::AI::CRM114->new();
+isa_ok($db, 'Text::AI::CRM114');
+$db = Text::AI::CRM114->new(classes => ["Alice", "Macbeth"]);
+isa_ok($db, 'Text::AI::CRM114');
+$db = Text::AI::CRM114->new(flags => Text::AI::CRM114::OSB, datasize => 8000000, classes => ["Alice", "Macbeth"]);
 isa_ok($db, 'Text::AI::CRM114');
 
 $db->learn("Alice", SampleText::Alice());
