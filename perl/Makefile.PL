@@ -19,7 +19,7 @@ if  (eval {require ExtUtils::Constant; 1}) {
   # changes.
   my @names = (qw());
   ExtUtils::Constant::WriteConstants(
-                                     NAME         => 'Text::AI::libcrm114',
+                                     NAME         => 'Text::AI::CRM114::libcrm114',
                                      NAMES        => \@names,
                                      DEFAULT_TYPE => 're',
                                      C_FILE       => 'const-c.inc',
