@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 61;
+use Test::More tests => 62;
 BEGIN { use_ok('Text::AI::CRM114') };
 use lib 't';
 BEGIN { use_ok('SampleText') };
@@ -108,4 +108,9 @@ is($classes{"Something"}, 2);
 is($classes{"Else"},      3);
 is($classes{""},          4);
 is(scalar(keys(%classes)), 5);
+
+$db->learn("Alice", SampleText::Alice());
+$db->learn("Macbeth", SampleText::Macbeth());
+($err, $class, $prob, $pR) = $db->classify(SampleText::Willows_frag());
+is($err, Text::AI::CRM114::OK);
 
