@@ -157,7 +157,6 @@ sub new {
     Text::AI::CRM114::libcrm114::cb_setflags($cb, $self->{flags});
     Text::AI::CRM114::libcrm114::cb_setclassdefaults($cb);
     Text::AI::CRM114::libcrm114::cb_setdatablock_size($cb, $self->{datasize});
-    Text::AI::CRM114::libcrm114::cb_setblockdefaults($cb);
     $self->{classmap} = {};
     my @classes = @{$self->{classes}};
     for (my $i=0; $i < scalar(@classes); $i++) {
@@ -165,6 +164,7 @@ sub new {
         $self->{classmap}->{$classes[$i]} = $i;
     }
 	Text::AI::CRM114::libcrm114::cb_set_how_many_classes($cb, scalar(@classes));
+    Text::AI::CRM114::libcrm114::cb_setblockdefaults($cb);
     $self->{db} = Text::AI::CRM114::libcrm114::new_db($cb);
     Text::AI::CRM114::libcrm114::db_setuserid_text($self->{db}, "Text::AI::CRM114");
     return $self;
@@ -251,16 +251,16 @@ sub learn {
     }
 }
 
-=item $db->classify($text, $verbatim)
+=item $db->classify($text [, $verbatim] )
 
 Classify the text.
 
-The normal working mode without the optional C<$verbatim> flag adjusts the
-return values to be more useful with two classes (e.g. spam/ham).
-If the flag is given then the values are passed unchanged as they come
-from C<libcrm114>. In practice this is only relevant if you use more
-than two classes. (Then you have to consider the success/non-success classes
-and probably want to add a method to retrieve the single per-class results.)
+The normal mode (without the optional C<$verbatim> flag)
+adjusts the return values to be useful with two classes (e.g. spam/ham).
+
+If the C<$verbatim> flag is true, then the values are passed unchanged as they come
+from C<libcrm114>. See section "Classify Verbatim" below for more details and an
+example.
 
 Returns a list of five scalar values:
 
@@ -278,19 +278,11 @@ The name of the best matching class.
 
 The success probability. Normally the probability of the matching class (with 0.5 <= $prob <= 1)
 
-With C<$verbatim> this is the success probability, i.e. with two classes the
-probability of the first class and with multiple classes the sum of
-probabilities for all successful classes (with 0 <= $prob <= 1).
-
 =item $pR
 
 The logarithmic probability ratio i.e. C<log10($prob) - log10(1-$prob)>
 (theorethic range is 0 <= $pR <= 340, limited by floating point precision;
 but in practice a p = .99 yields a pR = 2, so high values are rather unusual).
-
-With C<$verbatim> this is the ratio between all success and all non-success
-probabilities, so for a non-successful result the value can also be negative
-(range -340 <= $pR <= 340).
 
 =back
 
@@ -313,6 +305,45 @@ sub classify {
 }
 
 =back
+
+=head1 CLASSIFY VERBATIM
+
+The following example shows the effect of the C<$verbatim> flag to C<classify()>:
+
+  my $db = Text::AI::CRM114->new( classes => ["Macbeth", "Alice"]);
+  $db->learn("Macbeth", SampleText::Macbeth());
+  $db->learn("Alice",   SampleText::Alice());
+  
+  my @ret = $db->classify(SampleText::Willows_frag(), 1);
+  printf "verbatim mode: err %d, class %s, prob %.3f, pR %.3f\n", @ret;
+  @ret = $db->classify(SampleText::Willows_frag());
+  printf "normal mode:   err %d, class %s, prob %.3f, pR %.3f\n", @ret;
+
+Output is:
+
+  verbatim mode: err 0, class Alice, prob 0.103, pR -0.938
+  normal mode:   err 0, class Alice, prob 0.897, pR 0.938
+
+The background here is that C<libcrm114> may use many classes, but on top of
+that all classes have "success" and "failure" bits (as a meta-category if you
+will). By default the first class indicates "success" and all other classes are
+"failures".
+
+This is important because the probability and the probability ratio (pR) of a
+result is not given relative to a single class, but relative to the "success"
+meta-category. So in the verbatim mode the probability of 0.103 is obviously
+not the probability of the best class I<p(Alice)>, but it is the probability of
+"success" I<p(success)>. If the first class is the best classification then
+these numbers are the same (because the class and the meta-category align);
+they are only different if another class is found to be the best match.
+
+In order to simplify the expected most common usage with two classes, this
+module inverts the values as needed.
+
+The C<$verbatim> flag just provides access to the original values for those who
+need them. If you use more than two classes then you should look into
+C<libcrm114> for the exact meaning of the result values, and you might want to
+add accessor methods to set the "success"/"failure" flags for single classes.
 
 =head1 ISSUES
 
