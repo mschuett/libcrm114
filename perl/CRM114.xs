@@ -170,6 +170,27 @@ crm114_db_getclasses(p_db)
     }
 
 void
+crm114_db_setuserid_text(db, text)
+    CRM114_DATABLOCK *  db
+    SV * text
+  PREINIT:
+    size_t len;
+  CODE:
+    len = (sv_len(text) < STATISTICS_FILE_IDENT_STRING_MAX)
+		? sv_len(text)
+		: STATISTICS_FILE_IDENT_STRING_MAX;
+    strncpy(db->cb.user_identifying_text, SvPV(text, len), len);
+	db->cb.userid_text_len = len;
+  OUTPUT:
+    db
+
+void
+crm114_db_getuserid_text(db)
+    CRM114_DATABLOCK *  db
+  PPCODE:
+	XPUSHs(sv_2mortal(newSVpvn(db->cb.user_identifying_text, db->cb.userid_text_len)));
+
+void
 crm114_cb_setclassname(p_cb, num, name)
     CRM114_CONTROLBLOCK * p_cb
     int num

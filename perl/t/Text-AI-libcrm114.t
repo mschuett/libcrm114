@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 28;
 BEGIN { use_ok('Text::AI::CRM114') };
 use lib "t";
 BEGIN { use_ok('SampleText') };
@@ -47,6 +47,12 @@ Text::AI::libcrm114::cb_setclassname($cb, 0, 'A');
 Text::AI::libcrm114::cb_setclassname($cb, 1, 'B');
 my $db = Text::AI::libcrm114::new_db($cb);
 ok($db);
+
+my $uid_string = "Text::AI::CRM114";
+is(Text::AI::libcrm114::db_getuserid_text($db), "");
+Text::AI::libcrm114::db_setuserid_text($db, $uid_string);
+is(Text::AI::libcrm114::db_getuserid_text($db), $uid_string);
+
 my ($size, $addr) = Text::AI::libcrm114::db_getinfo($db);
 my $original_addr = $addr;
 # not a nice test, but on i386 this is 25200 and on amd64 it becomes 29304
