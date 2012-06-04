@@ -162,8 +162,7 @@ crm114_db_getclasses(p_db)
     unsigned i = 0;
     char *name;
   PPCODE:
-    /* get all classes with names */
-    while (i < CRM114_MAX_CLASSES && (p_db->cb.class[i].name[0] != '\0')) {
+    while (i < p_db->cb.how_many_classes) {
       name = p_db->cb.class[i].name;
       XPUSHs(sv_2mortal(newSVpv(name, 0)));
       i++;
@@ -197,6 +196,15 @@ crm114_cb_setclassname(p_cb, num, name)
     char * name
   CODE:
     strcpy(p_cb->class[num].name, name);
+  OUTPUT:
+    p_cb
+
+void
+crm114_cb_set_how_many_classes(p_cb, num)
+    CRM114_CONTROLBLOCK * p_cb
+    int num
+  CODE:
+    p_cb->how_many_classes = num;
   OUTPUT:
     p_cb
 

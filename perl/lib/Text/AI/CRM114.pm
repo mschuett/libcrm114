@@ -164,6 +164,7 @@ sub new {
         Text::AI::CRM114::libcrm114::cb_setclassname($cb, $i, $classes[$i]);
         $self->{classmap}->{$classes[$i]} = $i;
     }
+	Text::AI::CRM114::libcrm114::cb_set_how_many_classes($cb, scalar(@classes));
     $self->{db} = Text::AI::CRM114::libcrm114::new_db($cb);
     Text::AI::CRM114::libcrm114::db_setuserid_text($self->{db}, "Text::AI::CRM114");
     return $self;
