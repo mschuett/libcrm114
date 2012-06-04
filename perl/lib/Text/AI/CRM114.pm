@@ -21,7 +21,6 @@ Text::AI::CRM114 - Perl interface for CRM114
 
   use Text::AI::CRM114;
   my $db = Text::AI::CRM114->new(
-    flags   => Text::AI::CRM114::OSBF_BAYES,
     classes => ["Alice", "Macbeth"]
   );
 
@@ -142,16 +141,16 @@ a list of classes passed by reference.
 =cut
 
 sub new {
-	my $class = shift;
-	my $self = {
-		flags => OSB_BAYES,
-		datasize => 0,
-		classes => ['A', 'B'],
-		@_ };
+    my $class = shift;
+    my $self = {
+        flags => OSB_BAYES,
+        datasize => 0,
+        classes => ['A', 'B'],
+        @_ };
     bless ($self, $class);
 
-	carp sprintf("%s->(0x%x, %s, %s)", $class, $self->{flags},
-		$self->{datasize}, $self->{classes}) if ($debug);
+    carp sprintf("%s->(0x%x, %s, %s)", $class, $self->{flags},
+        $self->{datasize}, $self->{classes}) if ($debug);
 
     # now set up the C structs
     my $cb = Text::AI::CRM114::libcrm114::new_cb();
@@ -166,7 +165,7 @@ sub new {
         $self->{classmap}->{$classes[$i]} = $i;
     }
     $self->{db} = Text::AI::CRM114::libcrm114::new_db($cb);
-	Text::AI::CRM114::libcrm114::db_setuserid_text($self->{db}, "Text::AI::CRM114");
+    Text::AI::CRM114::libcrm114::db_setuserid_text($self->{db}, "Text::AI::CRM114");
     return $self;
 }
 
